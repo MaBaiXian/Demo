@@ -12,12 +12,12 @@
     <el-form-item label="年级专业">
       <el-input v-model.trim="user.major" readonly />
     </el-form-item>
-    <el-form-item label="密码">
+    <!-- <el-form-item label="密码">
       <el-input v-model.trim="user.password" />
-    </el-form-item>
-    <el-form-item>
+    </el-form-item> -->
+    <!-- <el-form-item>
       <el-button type="primary" @click="submit">提交</el-button>
-    </el-form-item>
+    </el-form-item> -->
   </el-form>
 </template>
 

@@ -102,67 +102,6 @@ export const constantRoutes = [
   // },
 
   // {
-  //   path: '/nested',
-  //   component: Layout,
-  //   redirect: '/nested/menu1',
-  //   name: 'Nested',
-  //   meta: {
-  //     title: 'Nested',
-  //     icon: 'nested'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'menu1',
-  //       component: () => import('@/views/nested/menu1/index'), // Parent router-view
-  //       name: 'Menu1',
-  //       meta: { title: 'Menu1' },
-  //       children: [
-  //         {
-  //           path: 'menu1-1',
-  //           component: () => import('@/views/nested/menu1/menu1-1'),
-  //           name: 'Menu1-1',
-  //           meta: { title: 'Menu1-1' }
-  //         },
-  //         {
-  //           path: 'menu1-2',
-  //           component: () => import('@/views/nested/menu1/menu1-2'),
-  //           name: 'Menu1-2',
-  //           meta: { title: 'Menu1-2' },
-  //           children: [
-  //             {
-  //               path: 'menu1-2-1',
-  //               component: () =>
-  //                 import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-  //               name: 'Menu1-2-1',
-  //               meta: { title: 'Menu1-2-1' }
-  //             },
-  //             {
-  //               path: 'menu1-2-2',
-  //               component: () =>
-  //                 import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-  //               name: 'Menu1-2-2',
-  //               meta: { title: 'Menu1-2-2' }
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           path: 'menu1-3',
-  //           component: () => import('@/views/nested/menu1/menu1-3'),
-  //           name: 'Menu1-3',
-  //           meta: { title: 'Menu1-3' }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: 'menu2',
-  //       component: () => import('@/views/nested/menu2/index'),
-  //       name: 'Menu2',
-  //       meta: { title: 'menu2' }
-  //     }
-  //   ]
-  // },
-
-  // {
   //   path: 'external-link',
   //   component: Layout,
   //   children: [
@@ -260,7 +199,37 @@ export const asyncRoutes = [
       }
     ]
   },
-
+  {
+    path: '/EmployeeManagement',
+    component: Layout,
+    redirect: '/EmployeeManagement/AdminManagement',
+    name: 'EmployeeManagement',
+    meta: {
+      title: '人员管理',
+      icon: 'el-icon-user-solid',
+      roles: ['SysAdmin', 'DormAdmin']
+    },
+    children: [
+      {
+        path: 'AdminManagement',
+        component: () => import('@/views/EmployeeManagement/AdminManagement/index'), // Parent router-view
+        name: 'AdminManagement',
+        meta: {
+          title: '管理员管理',
+          roles: ['SysAdmin']
+        }
+      },
+      {
+        path: 'StudentManagement',
+        component: () => import('@/views/EmployeeManagement/StudentManagement/index'),
+        name: 'StudentManagement',
+        meta: {
+          title: '学生管理',
+          roles: ['SysAdmin', 'DormAdmin']
+        }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
