@@ -35,7 +35,7 @@
     <el-dialog :visible.sync="dialogVisible" :title="dialogTitle">
       <el-form :model="currentNotice">
         <el-form-item label="内容">
-          <el-input v-model="currentNotice.content" type="textarea" />
+          <el-input v-model="currentNotice.message" type="textarea" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { getAllAnnouncements, deleteAnnouncement } from '@/api/Announcement'
+import { updateAnnouncement, createAnnouncement, getAllAnnouncements, deleteAnnouncement } from '@/api/Announcement'
 
 export default {
   data() {
@@ -102,16 +102,38 @@ export default {
       })
     },
     saveNotice() {
+      // 检查当前通知对象是否有id属性
       if (this.currentNotice.id) {
-        const index = this.notices.findIndex(n => n.id === this.currentNotice.id)
-        if (index !== -1) {
-          this.$set(this.notices, index, { ...this.currentNotice })
-        }
+        // 如果有id，发送PUT请求更新通知
+        updateAnnouncement(this.currentNotice.id, this.currentNotice).then(response => {
+          if (response.message === 'ok') {
+            // 更新成功，显示成功消息
+            this.$message({
+              message: '更新成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+            // 更新本地通知列表
+            this.dialogVisible = false
+            this.fetchNotices()
+          }
+        })
       } else {
-        this.currentNotice.id = Date.now()
-        this.notices.push({ ...this.currentNotice })
+        // 如果没有id，发送POST请求创建新通知
+        createAnnouncement(this.currentNotice).then(response => {
+          if (response.message === 'ok') {
+            // 创建成功，显示成功消息
+            this.$message({
+              message: '创建成功',
+              type: 'success',
+              duration: 5 * 1000
+            })
+            // 更新本地通知列表
+            this.dialogVisible = false
+            this.fetchNotices()
+          }
+        })
       }
-      this.dialogVisible = false
     },
     filterNotices() {
       if (this.filterContent) {

@@ -67,6 +67,47 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         // 执行删除操作
         return announcementMapper.deleteById(id);
     }
+
+    @Override
+    public int updateAnnouncement(String token, int id, String message) {
+        User user = userService.getUserByToken(token);
+        // 检查用户是否为空
+        if (user == null) {
+            throw new RuntimeException("无效的Token");
+        }
+        // 检查用户是否有足够权限
+        if (!user.getRoles().equals("SysAdmin") && !user.getRoles().equals("DormAdmin")) {
+            throw new RuntimeException("权限不足");
+        }
+        // 检查公告是否存在
+        Announcement ann = announcementMapper.selectById(id);
+        if (ann == null) {
+            // 如果公告不存在，返回 0 表示没有删除任何行
+            return 0;
+        }
+        // 执行更新操作
+        ann.setMessage(message);
+        return announcementMapper.updateById(ann);
+    }
+
+    @Override
+    public int createAnnouncement(String token, String message) {
+        User user = userService.getUserByToken(token);
+        // 检查用户是否为空
+        if (user == null) {
+            throw new RuntimeException("无效的Token");
+        }
+        // 检查用户是否有足够权限
+        if (!user.getRoles().equals("SysAdmin") && !user.getRoles().equals("DormAdmin")) {
+            throw new RuntimeException("权限不足");
+        }
+
+        Announcement ann = new Announcement();
+        ann.setMessage(message);
+        ann.setPublisher(user.getUsername());
+        ann.setAvatar(user.getAvatar());
+        return announcementMapper.insert(ann);
+    }
 }
 
 
