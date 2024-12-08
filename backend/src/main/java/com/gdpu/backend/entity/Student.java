@@ -3,14 +3,14 @@ package com.gdpu.backend.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName(value = "user")
-public class Admin extends User {
+public class Student extends User {
     
-    public Admin() {
+    public Student() {
         super(); 
     }
 
     @Override
     public String toString() {
-        return "Admin{" + super.toString() + "}";
+        return "Student{" + super.toString() + "}";
     }
 }
