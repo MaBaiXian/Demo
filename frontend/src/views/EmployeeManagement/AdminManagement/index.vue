@@ -42,34 +42,38 @@
 
     <!-- 对话框 -->
     <el-dialog :visible.sync="dialogVisible" :title="dialogTitle">
-      <el-form :model="currentAdmin">
-        <el-form-item label="姓名">
+      <el-form ref="adminForm" :model="currentAdmin" :rules="rules">
+        <el-form-item label="姓名" prop="username">
           <el-input v-model="currentAdmin.username" />
         </el-form-item>
-        <el-form-item label="性别">
+        <el-form-item label="性别" prop="gender">
           <el-radio-group v-model="currentAdmin.gender">
             <el-radio :label="'男'">男</el-radio>
             <el-radio :label="'女'">女</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="权限角色">
+        <el-form-item label="权限角色" prop="roles">
           <el-radio-group v-model="currentAdmin.roles">
             <el-radio :label="'SysAdmin'">SysAdmin</el-radio>
             <el-radio :label="'DormAdmin'">DormAdmin</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="职能">
+        <el-form-item label="职能" prop="major">
           <el-input v-model="currentAdmin.major" />
         </el-form-item>
-        <el-form-item label="归属单位">
+        <el-form-item label="归属单位" prop="dorm">
           <el-input v-model="currentAdmin.dorm" />
         </el-form-item>
-        <el-form-item label="账户密码">
-          <el-input v-model="currentAdmin.password" />
+        <el-form-item label="账户密码" prop="password">
+          <el-input
+            v-model="currentAdmin.password"
+            type="password"
+            show-password
+          />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button @click="cancelDialog">取消</el-button>
         <el-button type="primary" @click="savePerson">保存</el-button>
       </span>
     </el-dialog>
@@ -99,6 +103,17 @@ import { getAdminList, createAdmin, updateAdmin, deleteAdmin } from '@/api/Admin
 
 export default {
   data() {
+    // 密码验证规则
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value.length < 6) {
+        callback(new Error('密码长度必须大于等于6位'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       adminList: [],
       allAdminList: [],
@@ -116,7 +131,25 @@ export default {
       },
       filterContent: '',
       currentPage: 1,
-      totalAdmin: 0
+      totalAdmin: 0,
+      rules: {
+        username: [
+          { required: true, message: '请输入姓名', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { validator: validatePassword, trigger: 'blur' }
+        ],
+        roles: [
+          { required: true, message: '请选择权限角色', trigger: 'change' }
+        ],
+        major: [
+          { required: true, message: '请输入职能', trigger: 'blur' }
+        ],
+        dorm: [
+          { required: true, message: '请输入归属单位', trigger: 'blur' }
+        ]
+      }
     }
   },
   mounted() {
@@ -142,6 +175,9 @@ export default {
         avatar: '',
         password: ''
       }
+      this.$nextTick(() => {
+        this.$refs.adminForm.clearValidate()
+      })
       this.dialogVisible = true
     },
     editPerson(person) {
@@ -173,31 +209,41 @@ export default {
       })
     },
     savePerson() {
-      if (this.currentAdmin.userId) { // 保持数据结构的一致性
-        updateAdmin(this.currentAdmin.userId, this.currentAdmin).then(response => {
-          if (response.message === 'ok') {
-            this.$message({
-              message: '更新成功',
-              type: 'success',
-              duration: 5 * 1000
+      this.$refs.adminForm.validate(valid => {
+        if (valid) {
+          if (this.dialogTitle === '添加人员') {
+            createAdmin(this.currentAdmin).then(response => {
+              if (response.message === 'ok') {
+                this.$message({
+                  message: '添加成功',
+                  type: 'success',
+                  duration: 5 * 1000
+                })
+                this.dialogVisible = false
+                this.fetchAdmin()
+              }
             })
-            this.dialogVisible = false
-            this.fetchAdmin() // 保持方法命名的一致性
-          }
-        })
-      } else {
-        createAdmin(this.currentAdmin).then(response => {
-          if (response.message === 'ok') {
-            this.$message({
-              message: '创建成功',
-              type: 'success',
-              duration: 5 * 1000
+          } else {
+            updateAdmin(this.currentAdmin.userId, this.currentAdmin).then(response => {
+              if (response.message === 'ok') {
+                this.$message({
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 5 * 1000
+                })
+                this.dialogVisible = false
+                this.fetchAdmin()
+              }
             })
-            this.dialogVisible = false
-            this.fetchAdmin() // 保持方法命名的一致性
           }
-        })
-      }
+        } else {
+          return false
+        }
+      })
+    },
+    cancelDialog() {
+      this.$refs.adminForm.resetFields()
+      this.dialogVisible = false
     },
     filterPersonnel() {
       if (this.filterContent) {

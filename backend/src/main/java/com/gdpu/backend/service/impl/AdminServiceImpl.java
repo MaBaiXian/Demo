@@ -94,6 +94,9 @@ public class AdminServiceImpl implements AdminService {
             // 如果已存在相同用户名的管理员，抛出异常或返回特定值
             throw new RuntimeException("管理员用户名已存在");
         }
+        
+        admin.setAvatar("https://www.emojiall.com/images/120/apple/ios-17.4/1f924.png");
+    
         // 执行创建操作
         return adminMapper.insert(admin);
     }
