@@ -120,13 +120,31 @@ export const asyncRoutes = [
     component: Layout,
     children: [
       {
-        path: 'index',
+        path: 'create',
         name: 'RepairApplication',
-        component: () => import('@/views/repairApplication/index'),
+        component: () => import('@/views/repairApplication/create'),
         meta: {
           title: '维修申请',
           icon: 'el-icon-s-cooperation',
           roles: ['Student']
+        }
+      }
+    ]
+  },
+
+  { path: '*', redirect: '/404', hidden: true },
+  {
+    path: '/table',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'table',
+        component: () => import('@/views/table/index'),
+        meta: {
+          title: '维修申报处理',
+          icon: 'el-icon-s-tools',
+          roles: ['DormAdmin']
         }
       }
     ]
@@ -144,6 +162,23 @@ export const asyncRoutes = [
           title: '费用缴纳',
           icon: 'el-icon-s-finance',
           roles: ['Student']
+        }
+      }
+    ]
+  },
+
+  {
+    path: 'feePayment',
+    component: Layout,
+    children: [
+      {
+        path: '/showAllFee/index',
+        name: 'StudentFees',
+        component: () => import('@/views/feePayment/showAllFee/index'),
+        meta: {
+          title: '学生费用管理',
+          icon: 'el-icon-s-finance',
+          roles: ['DormAdmin']
         }
       }
     ]
